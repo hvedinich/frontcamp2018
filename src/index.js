@@ -16,8 +16,6 @@ const addListners = () => {
       const drawNews = res[1].default;
       getNews({ keywords: value, topic: store.topic, callback: drawNews }, );
     });
-    // getNews({ keywords: value, topic: store.topic, callback: drawNews }, );
-    // 
   })
 
   document.getElementsByClassName('news-checkbox')[0].addEventListener('click', (e) => {
@@ -26,7 +24,5 @@ const addListners = () => {
 }
 
 window.onload = () => {
-  // getNews({ callback: drawNews });
   addListners();
-
 }
