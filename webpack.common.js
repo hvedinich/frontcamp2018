@@ -22,7 +22,19 @@ module.exports = {
       {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"]
-      }
+      },
+      {
+        test: /\.(woff2?|ttf|eot|svg)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 10000,
+              name: 'fonts/[name].[ext]'
+            }
+          }
+        ]
+      },
     ]
   },
   plugins: [
