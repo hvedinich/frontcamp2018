@@ -9,5 +9,10 @@ export default ({ keywords = '', topic = 'general', callback }) => {
       urlToImage,
       title,
       description }) => urlToImage && title && description))
-  });
+  }).catch((err) => {
+    import(/* webpackChunkName: "print" */ './errorHandler/getNewsErrorHandler').then((res) => {
+      const getNewsErrorHandler = res.default;
+      getNewsErrorHandler(err);
+    })
+  });;
 }
