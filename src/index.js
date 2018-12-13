@@ -1,20 +1,30 @@
-import './index.css'
+import Requests from './js/requests';
+import './index.css';
 
 const store = {
   topic: "",
 }
+
+const requests = new Requests();
+const proxy = new Proxy(requests, {
+  get(target, prop) {
+    return (method, data) => {
+      console.log(`request ${method}. Args:${JSON.stringify(data)}`);
+      return target[prop](method, data)
+    };
+  }
+});
+
 
 const addListners = () => {
   document.getElementsByClassName('search-button')[0].addEventListener('click', (e) => {
     e.preventDefault();
     const value = document.getElementsByClassName('search-input')[0].value;
     Promise.all([
-      import(/* webpackChunkName: "print" */ './js/getNews'),
       import(/* webpackChunkName: "print" */ './js/drawNews')
     ]).then((res) => {
-      const getNews = res[0].default;
-      const drawNews = res[1].default;
-      getNews({ keywords: value, topic: store.topic, callback: drawNews }, );
+      const drawNews = res[0].default;
+      proxy.createRequest('get', { keywords: value, topic: store.topic, callback: drawNews }, );
     });
   })
 

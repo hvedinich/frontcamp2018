@@ -10,9 +10,9 @@ export default ({ keywords = '', topic = 'general', callback }) => {
       title,
       description }) => urlToImage && title && description))
   }).catch((err) => {
-    import(/* webpackChunkName: "print" */ './errorHandler/getNewsErrorHandler').then((res) => {
-      const getNewsErrorHandler = res.default;
-      getNewsErrorHandler(err);
+    import(/* webpackChunkName: "print" */ '../errorHandler/getNewsErrorHandler').then((res) => {
+      const getNewsErrorHandler = res.default.getInstance();
+      getNewsErrorHandler.showErrorComponent(err);
     })
   });;
 }
