@@ -1,28 +1,38 @@
-import './index.css'
+const express = require('express')
+const bodyParser = require('body-parser');
+const router = require('./routes');
+const winston = require('winston');
 
-const store = {
-  topic: "",
-}
+const logger = winston.createLogger({
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'combined.log' })
+  ]
+});
 
-const addListners = () => {
-  document.getElementsByClassName('search-button')[0].addEventListener('click', (e) => {
-    e.preventDefault();
-    const value = document.getElementsByClassName('search-input')[0].value;
-    Promise.all([
-      import(/* webpackChunkName: "print" */ './js/getNews'),
-      import(/* webpackChunkName: "print" */ './js/drawNews')
-    ]).then((res) => {
-      const getNews = res[0].default;
-      const drawNews = res[1].default;
-      getNews({ keywords: value, topic: store.topic, callback: drawNews }, );
-    });
-  })
+const app = express()
+const port = 3000
 
-  document.getElementsByClassName('news-checkbox')[0].addEventListener('click', (e) => {
-    store.topic = e.target.value;
-  })
-}
+app.use(require('./middleware/sendHttpError'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use((req,res,next)=>{
+  logger.log({
+    level: 'info',
+    message: `${Date.now()}-${req.method}-url:${req.url}`
+  });
+  next();
+})
 
-window.onload = () => {
-  addListners();
-}
+app.get("/error", function (req, res) {
+  throw new Error("BROKEN"); 
+});
+
+app.use('/', router);
+
+app.use(function (err, req, res, next) {
+  res.sendHttpError(err);
+})
+
+
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))
